@@ -19,7 +19,7 @@ function compare( a, b ) {
     return 0;
 }
 
-function ensure(callback = () => {}) {
+function ensure(callback = (players: Object[]) => {}) {
     if (cacheClear) {
         clearTimeout(cacheClear);
     }
@@ -33,22 +33,28 @@ function ensure(callback = () => {}) {
             response.text().then(text => {
                 let json = JSON.parse(text.replace(/("[^"]*"\s*:\s*)(\d{16,})/g, '$1"$2"'));
                 json.sort(compare);
+                json.push({
+                    "player": "0",
+                    "nickname": "Synixe Contractors",
+                    "created": "2020-01-01T00:00:00.000Z",
+                });
                 set(json);
-                callback();
+                callback(json);
             });
         });
     }
 }
 
-function ensurePlayer(id: String, callback = (player: Object) => {}) {
-    ensure(() => {
-        console.log('ensured');
+function ensurePlayer(id: String, callback = (player: Object) => {}, playersCallback = (players: Object[]) => {}) {
+    ensure((players) => {
+        playersCallback(players);
     });
     let unsub = subscribe(contractors => {
+        console.log('loading player', id);
         const player = contractors.find(p => p.player == id);
         if (!player) { return }
         if (!player.transactions) {
-            fetch("https://dev.dynulo.com/pmc/v2/bank/transactions/" + id, {
+            fetch("https://dev.dynulo.com/pmc/v2/bank/transactions" + ((id == '0') ? '' : '/' + id), {
                 method: 'GET',
                 headers: {
                     "x-dynulo-guild-token": "50236e05-bc9a-4657-93d5-50cf58cba4d8",

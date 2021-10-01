@@ -14,6 +14,7 @@
 
 	const routes = {
 		'/': Dashboard,
+
 		'/Contractors': Contractors,
 		'/Contractor/:player': Contractor,
 

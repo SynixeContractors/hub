@@ -1,7 +1,7 @@
 <script>
     import SimpleBar from "simplebar";
     import { onMount } from 'svelte';
-    import { ServerIcon, CalendarIcon, SlidersIcon, UserIcon } from 'svelte-feather-icons';
+    import { BriefcaseIcon, SlidersIcon, UserIcon } from 'svelte-feather-icons';
     
     import Link from './Link.svelte';
 
@@ -54,8 +54,7 @@
 
         <ul class="sidebar-nav">
             <Link href="#/" icon={SlidersIcon} name="Dashboard" />
-
-
+            <Link href="#/Contractor/0" icon={BriefcaseIcon} name="Group" />
             <Link href="#/Contractors" icon={UserIcon} name="Contractors" />
 
         </ul>
