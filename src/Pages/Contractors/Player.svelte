@@ -70,6 +70,7 @@
                 timeline = timeline.concat(p.purchases);
                 timeline = timeline.sort(byDate);
                 balance = 0;
+                dataCategory = {};
                 let playerBalance = 0;
                 p.transactions.forEach(t => {
                     if (t.player == params.player) {
@@ -118,6 +119,7 @@
                             backgroundColor: cat.map((i) => colors[i[0]]),
                         }]
                     };
+                    console.log(cat);
                     ready = true;
                 }, 5);
             }, (ps) => {
