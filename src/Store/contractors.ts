@@ -51,7 +51,6 @@ function ensurePlayer(id: String, callback = (player: Object) => {}, playersCall
         playersCallback(players);
     });
     let unsub = subscribe(contractors => {
-        console.log('loading player', id);
         const player = contractors.find(p => p.player == id);
         if (!player) { return }
         if (!player.transactions) {

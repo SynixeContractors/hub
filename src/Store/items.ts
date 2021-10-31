@@ -17,7 +17,6 @@ function ensure(callback = () => {}) {
                 for (var i = 0; i < json.length; i++) {
                     result[json[i].class] = json[i];
                 }
-                console.log(result);
                 set(result);
                 callback();
             });

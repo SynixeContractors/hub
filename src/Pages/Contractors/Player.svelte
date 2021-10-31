@@ -1,10 +1,13 @@
 <script>
     import { onMount } from 'svelte';
-    import { Row, Card, CardBody } from 'sveltestrap';
+    import { Row, Col, Card, CardBody } from 'sveltestrap';
     import { Jellyfish } from 'svelte-loading-spinners';
     import { ArrowLeftIcon, ArrowRightIcon } from 'svelte-feather-icons';
     import Line from "svelte-chartjs/src/Line.svelte"
+    import Pie from "svelte-chartjs/src/Pie.svelte"
     import { LOADER_SIZE } from '../../loader';
+    import { colors } from '../../colors';
+    
 
     import Title from '../../Title.svelte';
 
@@ -16,10 +19,12 @@
     let players = [];
     let player = null;
     let timeline = [];
+    let categories = {};
     let ready = false
     let balance = 0;
+    let dataCategory = {};
 
-    let dataLine = {
+    let dataBalance = {
         labels: [],
         datasets: [
             {
@@ -57,49 +62,67 @@
     }
 
     onMount(() => {
-        contractors.ensurePlayer(params.player, (p) => {
-            player = p;
-            timeline = [];
-            timeline = timeline.concat(p.transactions);
-            timeline = timeline.concat(p.purchases);
-            timeline = timeline.sort(byDate);
-            balance = 0;
-            let dataBalance = 0;
-            p.transactions.forEach(t => {
-                if (t.player == params.player) {
-                    balance += t.amount;
-                } else {
-                    balance -= t.amount;
-                }
-            });
-            p.purchases.forEach(t => {
-                if (!t.global) {
-                    balance -= t.amount * t.quantity;
-                }
-            });
-            timeline.reverse();
-            timeline.forEach(t => {
-                if (!t.global) {
-                    dataLine.labels.push(t.created);
-                    if (t.quantity) {
-                        dataBalance -= t.amount * t.quantity;
+        items.ensure(() => {
+            contractors.ensurePlayer(params.player, (p) => {
+                player = p;
+                timeline = [];
+                timeline = timeline.concat(p.transactions);
+                timeline = timeline.concat(p.purchases);
+                timeline = timeline.sort(byDate);
+                balance = 0;
+                let playerBalance = 0;
+                p.transactions.forEach(t => {
+                    if (t.player == params.player) {
+                        balance += t.amount;
                     } else {
-                        if (t.player == params.player) {
-                            dataBalance += t.amount;
+                        balance -= t.amount;
+                    }
+                });
+                p.purchases.forEach(t => {
+                    if (!t.global) {
+                        balance -= t.amount * t.quantity;
+                        const category = $items[t.class].categories;
+                        if (category in categories) {
+                            categories[category] += t.amount * t.quantity;
                         } else {
-                            dataBalance -= t.amount;
+                            categories[category] = t.amount * t.quantity;
                         }
                     }
-                    dataLine.datasets[0].data.push(dataBalance);
-                }
+                });
+                timeline.reverse();
+                timeline.forEach(t => {
+                    if (!t.global) {
+                        dataBalance.labels.push(t.created);
+                        if (t.quantity) {
+                            playerBalance -= t.amount * t.quantity;
+                        } else {
+                            if (t.player == params.player) {
+                                playerBalance += t.amount;
+                            } else {
+                                playerBalance -= t.amount;
+                            }
+                        }
+                        dataBalance.datasets[0].data.push(playerBalance);
+                    }
+                });
+                timeline.reverse();
+                setTimeout(() => {
+                    let cat = Object.entries(categories);
+                    cat = cat.sort(function(a, b) {
+                        return b[0] - a[0];
+                    });
+                    dataCategory = {
+                        labels: cat.map((i) => i[0]),
+                        datasets: [{
+                            data: cat.map((i) => i[1]),
+                            backgroundColor: cat.map((i) => colors[i[0]]),
+                        }]
+                    };
+                    ready = true;
+                }, 5);
+            }, (ps) => {
+                players = ps;
             });
-            timeline.reverse();
-            setTimeout(() => {
-                ready = true;
-                console.log(player);
-            }, 5);
-        }, (ps) => {
-            players = ps;
         });
     });
 
@@ -112,6 +135,7 @@
             }
         }
     }
+
 </script>
 
 { #if !ready }
@@ -126,7 +150,12 @@
     { /if }
     <h3>Current Balance ${balance}</h3>
     <Row style="padding-bottom: 1rem">
-        <Line data={dataLine} options={{ legend: { display: false }, responsive: true, scales: { xAxes: [{ display: false }] } }} style="height: 20rem"/>
+        <Col md="8" sm="12" style="position: relative;height: 20rem">
+            <Line data={dataBalance} options={{ legend: { display: false }, responsive: true, maintainAspectRatio: false, scales: { xAxes: [{ display: false }] } }} />
+        </Col>
+        <Col md="4" sm="12">
+            <Pie data={dataCategory}  options={{ legend: { display: false }, responsive: true}} />
+        </Col>
     </Row>
     <Row>
         { #each timeline as event }
