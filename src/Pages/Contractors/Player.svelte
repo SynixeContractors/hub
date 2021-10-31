@@ -77,6 +77,11 @@
                         balance += t.amount;
                     } else {
                         balance -= t.amount;
+                        if ('salaries' in categories) {
+                            categories['salaries'] += t.amount;
+                        } else {
+                            categories['salaries'] = t.amount;
+                        }
                     }
                 });
                 p.purchases.forEach(t => {
