@@ -21,6 +21,7 @@
 { :else }
     <Row>
         { #each $contractors as contractor }
+        { #if !contractor.hidden }
         <div class="col-3 d-flex">
             <Card class="flex-fill">
                 <CardBody>
@@ -28,6 +29,7 @@
                 </CardBody>
             </Card>
         </div>
+        { /if }
         { /each }
     </Row>
 { /if }

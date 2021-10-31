@@ -36,6 +36,7 @@ function ensure(callback = (players: Object[]) => {}) {
                 json.push({
                     "player": "0",
                     "nickname": "Synixe Contractors",
+                    "hidden": false,
                     "created": "2020-01-01T00:00:00.000Z",
                 });
                 set(json);
