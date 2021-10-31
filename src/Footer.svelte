@@ -9,7 +9,7 @@
             <div class="col-6 text-end">
                 <ul class="list-inline">
                     <li class="list-inline-item">
-                        <a class="text-muted" href="https://synixe.contractors" target="_blank">Website</a>
+                        <a class="text-white" href="https://synixe.contractors" target="_blank">Synixe Website</a>
                     </li>
                 </ul>
             </div>

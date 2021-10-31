@@ -4,6 +4,7 @@
     import { Jellyfish } from 'svelte-loading-spinners';
     import { ArrowLeftIcon, ArrowRightIcon } from 'svelte-feather-icons';
     import Line from "svelte-chartjs/src/Line.svelte"
+    import { LOADER_SIZE } from '../../loader';
 
     import Title from '../../Title.svelte';
 
@@ -115,7 +116,7 @@
 
 { #if !ready }
     <Row class="justify-content-center jellyfish">
-        <Jellyfish size="60" color="var(--bs-primary)" unit="px" duration="1s" />
+        <Jellyfish size={LOADER_SIZE} color="var(--bs-primary)" unit="px" duration="1s" />
     </Row>
 { :else }
     { #if player.player == 0 }
@@ -125,7 +126,7 @@
     { /if }
     <h3>Current Balance ${balance}</h3>
     <Row style="padding-bottom: 1rem">
-        <Line data={dataLine} options={{ responsive: true, scales: { xAxes: [{ display: false }] } }} style="height: 20rem"/>
+        <Line data={dataLine} options={{ legend: { display: false }, responsive: true, scales: { xAxes: [{ display: false }] } }} style="height: 20rem"/>
     </Row>
     <Row>
         { #each timeline as event }

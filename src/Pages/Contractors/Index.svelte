@@ -6,6 +6,7 @@
     import Title from '../../Title.svelte';
 
     import contractors from '../../Store/contractors';
+import { LOADER_SIZE } from '../../loader';
 
     onMount(() => {
         contractors.ensure() 
@@ -16,7 +17,7 @@
 
 { #if $contractors.length == 0 }
     <Row class="justify-content-center jellyfish">
-        <Jellyfish size="60" color="var(--bs-primary)" unit="px" duration="1s" />
+        <Jellyfish size={LOADER_SIZE} color="var(--bs-primary)" unit="px" duration="1s" />
     </Row>
 { :else }
     <Row>
