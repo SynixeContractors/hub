@@ -7,6 +7,7 @@
     import Pie from "svelte-chartjs/src/Pie.svelte"
     import { LOADER_SIZE } from '../../loader';
     import { colors } from '../../colors';
+    import { DateTime } from 'luxon';
     
 
     import Title from '../../Title.svelte';
@@ -19,7 +20,6 @@
     let players = [];
     let player = null;
     let timeline = [];
-    let categories = {};
     let ready = false
     let balance = 0;
     let dataCategory = {};
@@ -70,8 +70,8 @@
                 timeline = timeline.concat(p.purchases);
                 timeline = timeline.sort(byDate);
                 balance = 0;
-                dataCategory = {};
                 let playerBalance = 0;
+                let categories = {};
                 p.transactions.forEach(t => {
                     if (t.player == params.player) {
                         balance += t.amount;
@@ -105,6 +105,7 @@
                         }
                         dataBalance.datasets[0].data.push(playerBalance);
                     }
+                    t.created = DateTime.fromISO(t.created).toLocaleString(DateTime.DATETIME_FULL);
                 });
                 timeline.reverse();
                 setTimeout(() => {
@@ -119,7 +120,6 @@
                             backgroundColor: cat.map((i) => colors[i[0]]),
                         }]
                     };
-                    console.log(cat);
                     ready = true;
                 }, 5);
             }, (ps) => {
@@ -129,7 +129,6 @@
     });
 
     function name(player) {
-        console.log('finding player', player, players)
         if (players.length > 0) {
             let p = players.find(p => p.player == player);
             if (p) {
