@@ -105,7 +105,7 @@
                         }
                         dataBalance.datasets[0].data.push(playerBalance);
                     }
-                    t.created = DateTime.fromISO(t.created).toLocaleString(DateTime.DATETIME_FULL);
+                    t.created = DateTime.fromISO(t.created + 'Z').toLocaleString(DateTime.DATETIME_FULL);
                 });
                 timeline.reverse();
                 setTimeout(() => {
