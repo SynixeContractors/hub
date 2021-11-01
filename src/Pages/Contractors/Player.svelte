@@ -63,7 +63,9 @@
 
     onMount(() => {
         items.ensure(() => {
+            console.log('about to load contractor');
             contractors.ensurePlayer(params.player, (p) => {
+                console.log('have contractor', p);
                 player = p;
                 timeline = [];
                 timeline = timeline.concat(p.transactions);
@@ -86,6 +88,14 @@
                 });
                 p.purchases.forEach(t => {
                     if (!t.global) {
+                        balance -= t.amount * t.quantity;
+                        const category = $items[t.class].categories;
+                        if (category in categories) {
+                            categories[category] += t.amount * t.quantity;
+                        } else {
+                            categories[category] = t.amount * t.quantity;
+                        }
+                    } else if (params.player == 0) {
                         balance -= t.amount * t.quantity;
                         const category = $items[t.class].categories;
                         if (category in categories) {
@@ -157,10 +167,10 @@
     <h3>Current Balance ${balance}</h3>
     <Row style="padding-bottom: 1rem">
         <Col md="8" sm="12" style="position: relative;height: 20rem">
-            <Line data={dataBalance} options={{ legend: { display: false }, responsive: true, maintainAspectRatio: false, scales: { xAxes: [{ display: false }] } }} />
+            <Line data={dataBalance} options={{ plugins: { legend: { display: false } }, responsive: true, maintainAspectRatio: false, scales: { x: { display: false } } }} />
         </Col>
         <Col md="4" sm="12">
-            <Pie data={dataCategory}  options={{ legend: { display: false }, responsive: true}} />
+            <Pie data={dataCategory}  options={{ plugins: { legend: { display: false } }, responsive: true}} />
         </Col>
     </Row>
     <Row>
@@ -176,10 +186,10 @@
                             { :else }
                                 <span style="color: blue"><ArrowRightIcon /></span> <div style="width: 5rem; display: inline-block">${ event.amount }</div> <div style="width: 10rem; display: inline-block">{ name(event.player) }</div> { event.reason }
                             { /if }
-                            <span style="float: right">
-                                { event.created }
-                            </span>
                         { /if }
+                        <span style="float: right">
+                            { event.created }
+                        </span>
                     { :else }
                         { #if event.class }
                             <span style="color: red"><ArrowRightIcon /></span> <div style="width: 5rem; display: inline-block">${ event.amount * event.quantity }</div> {event.quantity} x <b>{ $items[event.class].pretty }</b> @ ${ event.amount }
