@@ -24,6 +24,9 @@
     let balance = 0;
     let dataCategory = {};
 
+    let lifetimeIncome = 0;
+    let lifetimeExpense = 0;
+
     let dataBalance = {
         labels: [],
         datasets: [
@@ -72,11 +75,14 @@
                 timeline = timeline.concat(p.purchases);
                 timeline = timeline.sort(byDate);
                 balance = 0;
+                lifetimeIncome = 0;
+                lifetimeExpense = 0;
                 let playerBalance = 0;
                 let categories = {};
                 p.transactions.forEach(t => {
                     if (t.player == params.player) {
                         balance += t.amount;
+                        lifetimeIncome += t.amount;
                     } else {
                         balance -= t.amount;
                         if ('salaries' in categories) {
@@ -89,6 +95,7 @@
                 p.purchases.forEach(t => {
                     if (!t.global) {
                         balance -= t.amount * t.quantity;
+                        lifetimeExpense += t.amount * t.quantity;
                         const category = $items[t.class].categories;
                         if (category in categories) {
                             categories[category] += t.amount * t.quantity;
@@ -164,7 +171,17 @@
     { :else }
     <Title>Contractor <strong>{player.nickname}</strong></Title>
     { /if }
-    <h3>Current Balance ${balance}</h3>
+    <Row style="font-size: 1.2rem; text-align: center">
+        <Col md="4" sm="12">
+            <strong>Current Balance: ${balance.toLocaleString()}</strong>
+        </Col>
+        <Col md="4" sm="12">
+            <strong>Lifetime Income: ${lifetimeIncome.toLocaleString()}</strong>
+        </Col>
+        <Col md="4" sm="12">
+            <strong>Lifetime Expenses: ${lifetimeExpense.toLocaleString()}</strong>
+        </Col>
+    </Row>
     <Row style="padding-bottom: 1rem">
         <Col md="8" sm="12" style="position: relative;height: 20rem">
             <Line data={dataBalance} options={{ plugins: { legend: { display: false } }, responsive: true, maintainAspectRatio: false, scales: { x: { display: false } } }} />
@@ -179,12 +196,27 @@
                 <CardBody>
                     { #if player.player == '0' }
                         { #if event.class }
-                            <span style="color: red"><ArrowRightIcon /></span> <div style="width: 5rem; display: inline-block">${ event.amount * event.quantity }</div> <div style="width: 10rem; display: inline-block">{ name(event.player) }</div> {event.quantity} x <b>{ $items[event.class].pretty }</b> @ ${ event.amount }
+                            <span style="color: red"><ArrowRightIcon /></span>
+                            <div style="width: 5rem; display: inline-block">
+                                ${ (event.amount * event.quantity).toLocaleString() }
+                            </div>
+                            <div style="width: 10rem; display: inline-block">
+                                { name(event.player) }
+                            </div> { event.quantity } x <b>{ $items[event.class].pretty }</b> @ ${ event.amount.toLocaleString() }
                         { :else }
                             { #if event.player == '0' }
-                                <span style="color: green"><ArrowLeftIcon /></span> <div style="width: 5rem; display: inline-block">${ event.amount }</div> { event.reason }
+                                <span style="color: green"><ArrowLeftIcon /></span>
+                                <div style="width: 5rem; display: inline-block">
+                                    ${ event.amount.toLocaleString() }
+                                </div> { event.reason }
                             { :else }
-                                <span style="color: blue"><ArrowRightIcon /></span> <div style="width: 5rem; display: inline-block">${ event.amount }</div> <div style="width: 10rem; display: inline-block">{ name(event.player) }</div> { event.reason }
+                                <span style="color: blue"><ArrowRightIcon /></span>
+                                <div style="width: 5rem; display: inline-block">
+                                    ${ event.amount.toLocaleString() }
+                                </div>
+                                <div style="width: 10rem; display: inline-block">
+                                    { name(event.player) }
+                                </div> { event.reason }
                             { /if }
                         { /if }
                         <span style="float: right">
@@ -192,9 +224,15 @@
                         </span>
                     { :else }
                         { #if event.class }
-                            <span style="color: red"><ArrowRightIcon /></span> <div style="width: 5rem; display: inline-block">${ event.amount * event.quantity }</div> {event.quantity} x <b>{ $items[event.class].pretty }</b> @ ${ event.amount }
+                            <span style="color: red"><ArrowRightIcon /></span>
+                            <div style="width: 5rem; display: inline-block">
+                                ${ (event.amount * event.quantity).toLocaleString() } { #if event.global } G { /if } 
+                            </div> {event.quantity} x <b>{ $items[event.class].pretty }</b> @ ${ event.amount.toLocaleString() }
                         { :else }
-                        <span style="color: green"><ArrowLeftIcon /></span> <div style="width: 5rem; display: inline-block">${ event.amount }</div> { event.reason }
+                        <span style="color: green"><ArrowLeftIcon /></span>
+                        <div style="width: 5rem; display: inline-block">
+                            ${ event.amount.toLocaleString() }
+                        </div> { event.reason }
                         { /if }
                         <span style="float: right">
                             { event.created }
